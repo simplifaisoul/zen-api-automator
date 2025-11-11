@@ -1,9 +1,11 @@
 class ZenAPIAutomator {
     constructor() {
-        this.socket = io();
+        this.socket = null;
         this.currentTab = 'dashboard';
         this.workflows = [];
         this.connections = [];
+        this.chatMessages = [];
+        this.isTyping = false;
         this.init();
     }
 
@@ -12,6 +14,8 @@ class ZenAPIAutomator {
         this.loadConnections();
         this.loadWorkflows();
         this.setupSocketListeners();
+        this.initChat();
+        this.checkMobileView();
     }
 
     setupEventListeners() {
@@ -48,6 +52,11 @@ class ZenAPIAutomator {
         document.getElementById(tabName).classList.add('active');
         document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
         this.currentTab = tabName;
+        
+        // Hide chat notification when switching to chat tab
+        if (tabName === 'ai-chat') {
+            this.hideChatNotification();
+        }
     }
 
     async loadConnections() {
@@ -322,6 +331,255 @@ class ZenAPIAutomator {
             setTimeout(() => notification.remove(), 300);
         }, 3000);
     }
+
+    // Chat functionality
+    initChat() {
+        this.loadChatHistory();
+        this.setupChatEventListeners();
+    }
+
+    setupChatEventListeners() {
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) {
+            chatInput.addEventListener('input', () => {
+                this.autoResizeTextarea(chatInput);
+            });
+        }
+    }
+
+    async sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        
+        if (!message || this.isTyping) return;
+        
+        this.addMessageToChat(message, 'user');
+        input.value = '';
+        this.autoResizeTextarea(input);
+        
+        this.showTypingIndicator();
+        this.isTyping = true;
+        
+        try {
+            const response = await this.callAI(message);
+            this.hideTypingIndicator();
+            this.addMessageToChat(response, 'ai');
+            this.isTyping = false;
+        } catch (error) {
+            this.hideTypingIndicator();
+            this.addMessageToChat('Sorry, I encountered an error. Please try again.', 'ai');
+            this.isTyping = false;
+        }
+    }
+
+    async callAI(message) {
+        try {
+            const response = await fetch('/.netlify/functions/api/ai/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message,
+                    conversationHistory: this.chatMessages.slice(-10) // Last 10 messages for context
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('AI service unavailable');
+            }
+            
+            const data = await response.json();
+            return data.response;
+        } catch (error) {
+            // Fallback to local responses if API fails
+            return this.getFallbackResponse(message);
+        }
+    }
+
+    getFallbackResponse(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        if (lowerMessage.includes('create') && lowerMessage.includes('workflow')) {
+            return "I'll help you create a new workflow! Let me guide you through the process:\n\n1. **Choose a trigger** - What should start this workflow?\n2. **Add actions** - What should happen when triggered?\n3. **Configure connections** - Which APIs do you need?\n4. **Test and deploy** - Let's make sure everything works\n\nWhat type of workflow would you like to create?";
+        }
+        
+        if (lowerMessage.includes('connect') || lowerMessage.includes('api')) {
+            return "I can help you connect any API! Here's what I need to know:\n\n**Required Information:**\n- API name and documentation URL\n- Authentication method (API key, OAuth, etc.)\n- Base URL\n- Rate limits\n\nWhich API would you like to connect?";
+        }
+        
+        if (lowerMessage.includes('debug') || lowerMessage.includes('error')) {
+            return "I'll help you debug your workflow! Let me analyze the common issues:\n\n**Things to check:**\n1. **Connection status** - Are all APIs connected?\n2. **Authentication** - Are credentials valid?\n3. **Data flow** - Is data passing correctly between steps?\n4. **Error handling** - Are failures being caught?\n\nWhat specific error are you seeing?";
+        }
+        
+        if (lowerMessage.includes('example') || lowerMessage.includes('template')) {
+            return "Here are some powerful workflow examples:\n\n**🔄 Data Sync Workflow**\n- Trigger: Schedule (every hour)\n- Action: Get data from API A\n- Action: Transform data\n- Action: Send to API B\n\n**📧 Smart Notifications**\n- Trigger: Webhook from app\n- Condition: Check priority\n- Action: Send email/SMS\n\nWhich example interests you most?";
+        }
+        
+        return "I'm here to help with API automation! I can assist with workflow creation, API connections, debugging, and optimization. What would you like to work on?";
+    }
+
+    addMessageToChat(message, sender) {
+        const messagesContainer = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-${sender === 'ai' ? 'robot' : 'user'}"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-text">${this.formatMessage(message)}</div>
+                <div class="message-time">${time}</div>
+            </div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        this.chatMessages.push({ message, sender, time });
+        this.saveChatHistory();
+        
+        // Show notification if not on chat tab
+        if (this.currentTab !== 'ai-chat' && sender === 'ai') {
+            this.showChatNotification();
+        }
+    }
+
+    formatMessage(message) {
+        // Convert URLs to links
+        message = message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+        
+        // Convert line breaks to <br>
+        message = message.replace(/\n/g, '<br>');
+        
+        // Bold text between ** **
+        message = message.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        
+        // Italic text between * *
+        message = message.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        return message;
+    }
+
+    showTypingIndicator() {
+        const messagesContainer = document.getElementById('chatMessages');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message ai-message';
+        typingDiv.id = 'typingIndicator';
+        
+        typingDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        `;
+        
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    showChatNotification() {
+        const badge = document.getElementById('chatNotification');
+        const floatingBadge = document.getElementById('floatingNotification');
+        
+        if (badge) {
+            badge.style.display = 'flex';
+            badge.textContent = '1';
+        }
+        
+        if (floatingBadge) {
+            floatingBadge.style.display = 'flex';
+            floatingBadge.textContent = '1';
+        }
+    }
+
+    hideChatNotification() {
+        const badge = document.getElementById('chatNotification');
+        const floatingBadge = document.getElementById('floatingNotification');
+        
+        if (badge) badge.style.display = 'none';
+        if (floatingBadge) floatingBadge.style.display = 'none';
+    }
+
+    saveChatHistory() {
+        try {
+            localStorage.setItem('zenChatHistory', JSON.stringify(this.chatMessages));
+        } catch (error) {
+            console.error('Failed to save chat history:', error);
+        }
+    }
+
+    loadChatHistory() {
+        try {
+            const saved = localStorage.getItem('zenChatHistory');
+            if (saved) {
+                this.chatMessages = JSON.parse(saved);
+                // Only load recent messages (last 20)
+                const recentMessages = this.chatMessages.slice(-20);
+                recentMessages.forEach(msg => {
+                    this.addMessageToChat(msg.message, msg.sender);
+                });
+            }
+        } catch (error) {
+            console.error('Failed to load chat history:', error);
+        }
+    }
+
+    clearChat() {
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.innerHTML = '';
+        this.chatMessages = [];
+        localStorage.removeItem('zenChatHistory');
+        
+        // Add welcome message back
+        this.addMessageToChat("Chat cleared! How can I help you today?", 'ai');
+    }
+
+    exportChat() {
+        const chatText = this.chatMessages.map(msg => 
+            `[${msg.time}] ${msg.sender.toUpperCase()}: ${msg.message}`
+        ).join('\n\n');
+        
+        const blob = new Blob([chatText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `zen-chat-${new Date().toISOString().split('T')[0]}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('Chat exported successfully', 'success');
+    }
+
+    autoResizeTextarea(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+    }
+
+    checkMobileView() {
+        const floatingBtn = document.getElementById('floatingChatBtn');
+        if (window.innerWidth <= 768) {
+            if (floatingBtn) floatingBtn.style.display = 'flex';
+        } else {
+            if (floatingBtn) floatingBtn.style.display = 'none';
+        }
+    }
 }
 
 const style = document.createElement('style');
@@ -405,3 +663,46 @@ function executeCurl() {
 function generateCurlCommand() {
     app.generateCurlCommand();
 }
+
+// Chat functions
+function sendMessage() {
+    app.sendMessage();
+}
+
+function handleChatKeyPress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        app.sendMessage();
+    }
+}
+
+function sendQuickMessage(message) {
+    const input = document.getElementById('chatInput');
+    if (input) {
+        input.value = message;
+        app.sendMessage();
+    }
+}
+
+function clearChat() {
+    app.clearChat();
+}
+
+function exportChat() {
+    app.exportChat();
+}
+
+function toggleChat() {
+    const chatTab = document.getElementById('ai-chat');
+    const chatBtn = document.getElementById('aiChatBtn');
+    
+    if (chatTab && chatBtn) {
+        app.switchTab('ai-chat');
+        app.hideChatNotification();
+    }
+}
+
+// Handle window resize for mobile chat
+window.addEventListener('resize', () => {
+    if (app) app.checkMobileView();
+});
