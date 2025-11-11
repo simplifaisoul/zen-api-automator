@@ -3,580 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zen API Automator - Super Easy API & Phone Calls</title>
+    <title>Zen API Automator - Professional Workflow Builder</title>
     <link rel="stylesheet" href="styles/main.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div id="app">
-        <!-- Animated Background -->
-        <div class="bg-animation">
-            <div class="floating-shapes"></div>
-        </div>
-
         <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <div class="logo-text">
-                        <h1>Zen API</h1>
-                        <span>Super Easy Automation</span>
-                    </div>
+                    <i class="fas fa-bolt"></i>
+                    <span>Zen API</span>
                 </div>
-                
-                <nav class="main-nav">
-                    <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
-                        <i class="fas fa-home"></i>
-                        <span>Home</span>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
+                        <i class="fas fa-th-large"></i>
+                        Dashboard
                     </button>
-                    <button class="nav-btn" data-tab="phone" onclick="switchTab('phone')">
-                        <i class="fas fa-phone"></i>
-                        <span>Phone</span>
-                        <div class="pulse-dot" id="phonePulse"></div>
+                    <button class="nav-btn" data-tab="workflows" onclick="switchTab('workflows')">
+                        <i class="fas fa-project-diagram"></i>
+                        Workflows
                     </button>
-                    <button class="nav-btn" data-tab="api" onclick="switchTab('api')">
-                        <i class="fas fa-globe"></i>
-                        <span>API</span>
+                    <button class="nav-btn" data-tab="connections" onclick="switchTab('connections')">
+                        <i class="fas fa-plug"></i>
+                        Connections
                     </button>
-                    <button class="nav-btn" data-tab="bot" onclick="switchTab('bot')">
-                        <i class="fas fa-robot"></i>
-                        <span>AI Bot</span>
-                        <div class="pulse-dot online" id="botPulse"></div>
+                    <button class="nav-btn" data-tab="executions" onclick="switchTab('executions')">
+                        <i class="fas fa-play"></i>
+                        Executions
                     </button>
                 </nav>
+                <div class="user-menu">
+                    <button class="user-btn">
+                        <i class="fas fa-user"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <!-- Home Tab -->
-            <div id="home" class="tab-content active">
-                <!-- Main Prompt Box - First Thing Visitors See -->
-                <div class="main-prompt-section">
-                    <div class="prompt-container">
-                        <div class="prompt-header">
-                            <div class="prompt-icon">
-                                <i class="fas fa-rocket"></i>
-                            </div>
-                            <h1 class="prompt-title">What will you do today?</h1>
-                            <p class="prompt-subtitle">Choose an action and I'll make it happen instantly! ✨</p>
+        <main class="main">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-header">
+                    <h1>Dashboard</h1>
+                    <p>Build and automate your workflows with ease</p>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <div class="action-card" onclick="createNewWorkflow()">
+                        <div class="action-icon">
+                            <i class="fas fa-plus"></i>
                         </div>
-                        
-                        <div class="prompt-input-area">
-                            <div class="mega-input-wrapper">
-                                <input 
-                                    type="text" 
-                                    id="mainPromptInput" 
-                                    class="mega-input"
-                                    placeholder="Type what you want to do... (e.g., 'Call +1-555-123-4567', 'Check the weather', 'Send API request')"
-                                    onkeypress="handleMainPrompt(event)"
-                                    oninput="updatePromptSuggestions(this.value)"
-                                >
-                                <button class="mega-send-btn" onclick="executeMainPrompt()">
-                                    <i class="fas fa-paper-plane"></i>
-                                    <span>Go!</span>
-                                </button>
-                            </div>
-                            
-                            <div class="prompt-suggestions" id="promptSuggestions">
-                                <div class="suggestion-chips">
-                                    <button class="suggestion-chip" onclick="setPrompt('Call +1-555-123-4567')">
-                                        <i class="fas fa-phone"></i>
-                                        Make a Call
-                                    </button>
-                                    <button class="suggestion-chip" onclick="setPrompt('Send API request to https://api.github.com')">
-                                        <i class="fas fa-globe"></i>
-                                        API Request
-                                    </button>
-                                    <button class="suggestion-chip" onclick="setPrompt('Tell me a joke')">
-                                        <i class="fas fa-laugh"></i>
-                                        Ask AI
-                                    </button>
-                                    <button class="suggestion-chip" onclick="setPrompt('Check the weather')">
-                                        <i class="fas fa-cloud-sun"></i>
-                                        Weather
-                                    </button>
-                                    <button class="suggestion-chip" onclick="setPrompt('Help me with something')">
-                                        <i class="fas fa-question"></i>
-                                        Get Help
-                                    </button>
-                                </div>
-                            </div>
+                        <h3>Create Workflow</h3>
+                        <p>Build a new automation workflow</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="showConnectionDialog()">
+                        <div class="action-icon">
+                            <i class="fas fa-plug"></i>
                         </div>
-                        
-                        <div class="quick-action-grid">
-                            <div class="quick-action-card phone-action" onclick="quickAction('phone')">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-phone-volume"></i>
-                                </div>
-                                <div class="quick-action-content">
-                                    <h3>Make Phone Call</h3>
-                                    <p>Call anyone instantly</p>
-                                </div>
-                                <div class="quick-action-arrow">
-                                    <i class="fas fa-arrow-right"></i>
-                                </div>
-                            </div>
-                            
-                            <div class="quick-action-card api-action" onclick="quickAction('api')">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-bolt"></i>
-                                </div>
-                                <div class="quick-action-content">
-                                    <h3>Send API Request</h3>
-                                    <p>Connect to any service</p>
-                                </div>
-                                <div class="quick-action-arrow">
-                                    <i class="fas fa-arrow-right"></i>
-                                </div>
-                            </div>
-                            
-                            <div class="quick-action-card bot-action" onclick="quickAction('bot')">
-                                <div class="quick-action-icon">
-                                    <i class="fas fa-robot"></i>
-                                </div>
-                                <div class="quick-action-content">
-                                    <h3>Chat with AI Bot</h3>
-                                    <p>Get help instantly</p>
-                                </div>
-                                <div class="quick-action-arrow">
-                                    <i class="fas fa-arrow-right"></i>
-                                </div>
-                            </div>
+                        <h3>Add Connection</h3>
+                        <p>Connect to external services</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="runWorkflow()">
+                        <div class="action-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <h3>Run Workflow</h3>
+                        <p>Execute an existing workflow</p>
+                    </div>
+                    
+                    <div class="action-card" onclick="showTemplates()">
+                        <div class="action-icon">
+                            <i class="fas fa-copy"></i>
+                        </div>
+                        <h3>Browse Templates</h3>
+                        <p>Use pre-built workflow templates</p>
+                    </div>
+                </div>
+
+                <!-- Stats Overview -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="workflowCount">0</h3>
+                            <p>Workflows</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="connectionCount">0</h3>
+                            <p>Connections</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="executionCount">0</h3>
+                            <p>Executions</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="successRate">0%</h3>
+                            <p>Success Rate</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Activity Section -->
-                <div class="recent-activity-section">
-                    <h2 class="section-title">Recent Activity</h2>
-                    <div class="activity-timeline" id="activityTimeline">
+                <!-- Recent Activity -->
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-list" id="activityList">
                         <div class="activity-item">
-                            <div class="activity-icon success">
-                                <i class="fas fa-check"></i>
+                            <div class="activity-icon">
+                                <i class="fas fa-info"></i>
                             </div>
                             <div class="activity-content">
-                                <h4>Welcome to Zen API!</h4>
-                                <p>Start by typing what you want to do above</p>
+                                <h4>Welcome to Zen API Automator</h4>
+                                <p>Get started by creating your first workflow</p>
                                 <span class="activity-time">Just now</span>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Stats Section -->
-                <div class="stats-section">
-                    <h2 class="section-title">Your Stats</h2>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-phone"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="totalCalls">0</div>
-                                <div class="stat-label">Calls Made</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-exchange-alt"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="totalApiCalls">0</div>
-                                <div class="stat-label">API Requests</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="successRate">100%</div>
-                                <div class="stat-label">Success Rate</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="responseTime">0.5s</div>
-                                <div class="stat-label">Avg Response</div>
-                            </div>
-                        </div>
+            <!-- Workflows Tab -->
+            <div id="workflows" class="tab-content">
+                <div class="tab-header">
+                    <h1>Workflows</h1>
+                    <button class="btn-primary" onclick="createNewWorkflow()">
+                        <i class="fas fa-plus"></i>
+                        New Workflow
+                    </button>
+                </div>
+                
+                <div class="workflow-grid" id="workflowGrid">
+                    <div class="empty-state">
+                        <i class="fas fa-project-diagram"></i>
+                        <h3>No workflows yet</h3>
+                        <p>Create your first workflow to get started</p>
+                        <button class="btn-primary" onclick="createNewWorkflow()">
+                            <i class="fas fa-plus"></i>
+                            Create Workflow
+                        </button>
                     </div>
                 </div>
             </div>
 
-                <div class="stats-section">
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-phone"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="totalCalls">0</div>
-                                <div class="stat-label">Calls Made</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-exchange-alt"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="totalApiCalls">0</div>
-                                <div class="stat-label">API Requests</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="successRate">100%</div>
-                                <div class="stat-label">Success Rate</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="stat-info">
-                                <div class="stat-number" id="responseTime">0.5s</div>
-                                <div class="stat-label">Avg Response</div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Connections Tab -->
+            <div id="connections" class="tab-content">
+                <div class="tab-header">
+                    <h1>Connections</h1>
+                    <button class="btn-primary" onclick="showConnectionDialog()">
+                        <i class="fas fa-plus"></i>
+                        Add Connection
+                    </button>
                 </div>
-
-                <div class="tutorial-section">
-                    <h3 class="section-title">How to Use Zen API</h3>
-                    <div class="tutorial-grid">
-                        <div class="tutorial-card">
-                            <div class="tutorial-number">1</div>
-                            <div class="tutorial-content">
-                                <h4>Choose Your Action</h4>
-                                <p>Pick Phone, API, or AI Bot</p>
-                            </div>
-                        </div>
-                        
-                        <div class="tutorial-card">
-                            <div class="tutorial-number">2</div>
-                            <div class="tutorial-content">
-                                <h4>Fill in Details</h4>
-                                <p>Enter phone number or API info</p>
-                            </div>
-                        </div>
-                        
-                        <div class="tutorial-card">
-                            <div class="tutorial-number">3</div>
-                            <div class="tutorial-content">
-                                <h4>Click & Go!</h4>
-                                <p>Press the big button and you're done</p>
-                            </div>
-                        </div>
+                
+                <div class="connection-grid" id="connectionGrid">
+                    <div class="empty-state">
+                        <i class="fas fa-plug"></i>
+                        <h3>No connections yet</h3>
+                        <p>Add your first service connection</p>
+                        <button class="btn-primary" onclick="showConnectionDialog()">
+                            <i class="fas fa-plus"></i>
+                            Add Connection
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <!-- Phone Tab -->
-            <div id="phone" class="tab-content">
-                <div class="phone-container">
-                    <div class="phone-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-phone-volume"></i>
-                            Make a Phone Call
-                        </h2>
-                        <p class="section-subtitle">Super easy - just enter a number and click call!</p>
-                    </div>
-
-                    <div class="phone-main">
-                        <div class="phone-input-section">
-                            <div class="input-group">
-                                <label class="input-label">
-                                    <i class="fas fa-phone"></i>
-                                    Phone Number
-                                </label>
-                                <div class="phone-input-wrapper">
-                                    <input 
-                                        type="tel" 
-                                        id="phoneNumberInput" 
-                                        class="phone-input"
-                                        placeholder="+1 (555) 123-4567"
-                                        oninput="formatPhoneNumber(this)"
-                                    >
-                                    <div class="input-icon">
-                                        <i class="fas fa-user-friends"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="input-group">
-                                <label class="input-label">
-                                    <i class="fas fa-message"></i>
-                                    Message (Optional)
-                                </label>
-                                <div class="message-input-wrapper">
-                                    <textarea 
-                                        id="callMessageInput" 
-                                        class="message-input"
-                                        placeholder="What should I say during the call?"
-                                        rows="3"
-                                    ></textarea>
-                                    <div class="char-count">
-                                        <span id="messageCharCount">0</span>/160
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="call-action-section">
-                            <button 
-                                id="makeCallBtn" 
-                                class="call-btn"
-                                onclick="makePhoneCall()"
-                            >
-                                <div class="btn-content">
-                                    <i class="fas fa-phone-volume"></i>
-                                    <span>Make Call Now</span>
-                                </div>
-                                <div class="btn-ripple"></div>
-                            </button>
-                            
-                            <div class="quick-calls">
-                                <h4>Quick Calls:</h4>
-                                <div class="quick-call-buttons">
-                                    <button class="quick-call-btn" onclick="quickCall('+18005551234')">
-                                        <i class="fas fa-building"></i>
-                                        Test Number
-                                    </button>
-                                    <button class="quick-call-btn" onclick="quickCall('+1234567890')">
-                                        <i class="fas fa-user"></i>
-                                        My Contact
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="recent-calls" id="recentCalls">
-                        <h3>Recent Calls</h3>
-                        <div class="calls-list" id="callsList">
-                            <div class="empty-state">
-                                <i class="fas fa-phone-slash"></i>
-                                <p>No calls yet. Make your first call above!</p>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Executions Tab -->
+            <div id="executions" class="tab-content">
+                <div class="tab-header">
+                    <h1>Executions</h1>
+                    <button class="btn-secondary" onclick="refreshExecutions()">
+                        <i class="fas fa-sync"></i>
+                        Refresh
+                    </button>
                 </div>
-            </div>
-
-            <!-- API Tab -->
-            <div id="api" class="tab-content">
-                <div class="api-container">
-                    <div class="api-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-bolt"></i>
-                            Send API Request
-                        </h2>
-                        <p class="section-subtitle">Connect to any API service with one click!</p>
-                    </div>
-
-                    <div class="api-main">
-                        <div class="api-method-section">
-                            <label class="input-label">
-                                <i class="fas fa-cog"></i>
-                                Request Method
-                            </label>
-                            <div class="method-buttons">
-                                <button class="method-btn active" data-method="GET" onclick="selectMethod('GET')">GET</button>
-                                <button class="method-btn" data-method="POST" onclick="selectMethod('POST')">POST</button>
-                                <button class="method-btn" data-method="PUT" onclick="selectMethod('PUT')">PUT</button>
-                                <button class="method-btn" data-method="DELETE" onclick="selectMethod('DELETE')">DELETE</button>
-                            </div>
-                        </div>
-
-                        <div class="api-input-section">
-                            <div class="input-group">
-                                <label class="input-label">
-                                    <i class="fas fa-link"></i>
-                                    API URL
-                                </label>
-                                <div class="url-input-wrapper">
-                                    <input 
-                                        type="url" 
-                                        id="apiUrlInput" 
-                                        class="api-input"
-                                        placeholder="https://api.example.com/data"
-                                    >
-                                    <div class="input-icon">
-                                        <i class="fas fa-globe"></i>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="input-group" id="dataGroup" style="display: none;">
-                                <label class="input-label">
-                                    <i class="fas fa-code"></i>
-                                    Request Data (JSON)
-                                </label>
-                                <div class="data-input-wrapper">
-                                    <textarea 
-                                        id="apiDataInput" 
-                                        class="api-data-input"
-                                        placeholder='{"name": "John", "age": 25}'
-                                        rows="4"
-                                    ></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="api-action-section">
-                            <button 
-                                id="sendApiBtn" 
-                                class="api-btn"
-                                onclick="sendApiRequest()"
-                            >
-                                <div class="btn-content">
-                                    <i class="fas fa-paper-plane"></i>
-                                    <span>Send Request</span>
-                                </div>
-                                <div class="btn-ripple"></div>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="api-response" id="apiResponse" style="display: none;">
-                        <h3>Response</h3>
-                        <div class="response-content" id="responseContent"></div>
-                    </div>
-
-                    <div class="quick-apis">
-                        <h3>Try These APIs:</h3>
-                        <div class="api-examples">
-                            <button class="api-example-btn" onclick="tryExample('https://jsonplaceholder.typicode.com/posts/1', 'GET')">
-                                <i class="fas fa-list"></i>
-                                Sample Posts API
-                            </button>
-                            <button class="api-example-btn" onclick="tryExample('https://jsonplaceholder.typicode.com/users', 'GET')">
-                                <i class="fas fa-users"></i>
-                                Users API
-                            </button>
-                            <button class="api-example-btn" onclick="tryExample('https://api.github.com/users/octocat', 'GET')">
-                                <i class="fab fa-github"></i>
-                                GitHub User
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Bot Tab -->
-            <div id="bot" class="tab-content">
-                <div class="bot-container">
-                    <div class="bot-header">
-                        <div class="bot-title">
-                            <div class="bot-avatar">
-                                <i class="fas fa-robot"></i>
-                            </div>
-                            <div class="bot-info">
-                                <h2>Zen AI Bot</h2>
-                                <div class="bot-status">
-                                    <div class="status-dot online"></div>
-                                    <span>Online & Ready</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bot-actions">
-                            <button class="bot-action-btn" onclick="clearBotChat()">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="bot-chat">
-                        <div class="chat-messages" id="botMessages">
-                            <div class="message bot-message">
-                                <div class="message-avatar">
-                                    <i class="fas fa-robot"></i>
-                                </div>
-                                <div class="message-content">
-                                    <div class="message-text">
-                                        Hey! 👋 I'm Zen AI Bot! I can help you with:
-                                        <br><br>
-                                        📞 Making phone calls
-                                        <br>
-                                        🌐 Sending API requests
-                                        <br>
-                                        🤖 Answering questions
-                                        <br><br>
-                                        Just type what you want to do!
-                                    </div>
-                                    <div class="message-time">Just now</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bot-input-section">
-                            <div class="quick-commands">
-                                <button class="quick-cmd-btn" onclick="sendQuickCommand('Call +1-555-123-4567')">
-                                    <i class="fas fa-phone"></i>
-                                    Make Call
-                                </button>
-                                <button class="quick-cmd-btn" onclick="sendQuickCommand('Get weather')">
-                                    <i class="fas fa-cloud-sun"></i>
-                                    Weather
-                                </button>
-                                <button class="quick-cmd-btn" onclick="sendQuickCommand('Tell me a joke')">
-                                    <i class="fas fa-laugh"></i>
-                                    Joke
-                                </button>
-                                <button class="quick-cmd-btn" onclick="sendQuickCommand('Help')">
-                                    <i class="fas fa-question"></i>
-                                    Help
-                                </button>
-                            </div>
-                            
-                            <div class="bot-input-wrapper">
-                                <input 
-                                    type="text" 
-                                    id="botInput" 
-                                    class="bot-input"
-                                    placeholder="Type your message here..."
-                                    onkeypress="handleBotInput(event)"
-                                >
-                                <button class="bot-send-btn" onclick="sendBotMessage()">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </div>
+                
+                <div class="execution-list" id="executionList">
+                    <div class="empty-state">
+                        <i class="fas fa-play"></i>
+                        <h3>No executions yet</h3>
+                        <p>Run a workflow to see execution history</p>
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- Loading Overlay -->
-        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-            <div class="loading-content">
-                <div class="loading-spinner"></div>
-                <p id="loadingText">Working on it...</p>
+        <!-- Workflow Builder Modal -->
+        <div id="workflowModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Workflow Builder</h2>
+                    <button class="close-btn" onclick="closeWorkflowModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="workflow-builder">
+                    <div class="builder-sidebar">
+                        <h3>Components</h3>
+                        <div class="component-list">
+                            <div class="component-item" draggable="true" data-type="trigger">
+                                <i class="fas fa-bolt"></i>
+                                <span>Trigger</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="http">
+                                <i class="fas fa-globe"></i>
+                                <span>HTTP Request</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="phone">
+                                <i class="fas fa-phone"></i>
+                                <span>Phone Call</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="email">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="condition">
+                                <i class="fas fa-code-branch"></i>
+                                <span>Condition</span>
+                            </div>
+                            <div class="component-item" draggable="true" data-type="delay">
+                                <i class="fas fa-clock"></i>
+                                <span>Delay</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="builder-canvas" id="builderCanvas">
+                        <div class="canvas-placeholder">
+                            <i class="fas fa-arrow-left"></i>
+                            <p>Drag components here to build your workflow</p>
+                        </div>
+                    </div>
+                    
+                    <div class="builder-properties">
+                        <h3>Properties</h3>
+                        <div class="properties-panel" id="propertiesPanel">
+                            <p>Select a component to configure its properties</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeWorkflowModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveWorkflow()">
+                        <i class="fas fa-save"></i>
+                        Save Workflow
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Success Notification -->
-        <div class="success-notification" id="successNotification" style="display: none;">
+        <!-- Connection Modal -->
+        <div id="connectionModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Add Connection</h2>
+                    <button class="close-btn" onclick="closeConnectionModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="connection-form">
+                    <div class="form-group">
+                        <label>Service Type</label>
+                        <select id="serviceType" onchange="updateConnectionForm()">
+                            <option value="">Select a service</option>
+                            <option value="http">HTTP API</option>
+                            <option value="twilio">Twilio</option>
+                            <option value="sendgrid">SendGrid</option>
+                            <option value="slack">Slack</option>
+                            <option value="github">GitHub</option>
+                            <option value="stripe">Stripe</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Connection Name</label>
+                        <input type="text" id="connectionName" placeholder="My API Connection">
+                    </div>
+                    
+                    <div id="connectionFields">
+                        <p>Select a service type to see required fields</p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeConnectionModal()">Cancel</button>
+                    <button class="btn-primary" onclick="saveConnection()">
+                        <i class="fas fa-save"></i>
+                        Save Connection
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Processing...</p>
+            </div>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="notification" class="notification" style="display: none;">
             <div class="notification-content">
                 <i class="fas fa-check-circle"></i>
-                <span id="successText">Success!</span>
+                <span id="notificationText">Success!</span>
             </div>
         </div>
     </div>
