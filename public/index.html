@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen API Automator - Next Level API Integration</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-infinity"></i>
+                    <span>Zen API Automator</span>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-tab="workflows">
+                        <i class="fas fa-project-diagram"></i> Workflows
+                    </button>
+                    <button class="nav-btn" data-tab="connections">
+                        <i class="fas fa-plug"></i> Connections
+                    </button>
+                    <button class="nav-btn" data-tab="curl">
+                        <i class="fas fa-terminal"></i> cURL Builder
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div id="dashboard" class="tab-content active">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Active Workflows</h3>
+                        <div class="metric">12</div>
+                        <div class="trend up">+2 this week</div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-plug"></i> API Connections</h3>
+                        <div class="metric">24</div>
+                        <div class="trend">3 need attention</div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-clock"></i> Executions Today</h3>
+                        <div class="metric">1,847</div>
+                        <div class="trend up">+15% vs yesterday</div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-check-circle"></i> Success Rate</h3>
+                        <div class="metric">98.2%</div>
+                        <div class="trend up">+0.3% improvement</div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h2>Recent Activity</h2>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <i class="fas fa-check success"></i>
+                            <div class="activity-details">
+                                <strong>Daily Health Check</strong> completed successfully
+                                <span class="time">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-exclamation warning"></i>
+                            <div class="activity-details">
+                                <strong>Stripe API</strong> connection timeout
+                                <span class="time">15 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-phone info"></i>
+                            <div class="activity-details">
+                                <strong>Phone Call Analysis</strong> processed 5 calls
+                                <span class="time">1 hour ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="workflows" class="tab-content">
+                <div class="workflow-header">
+                    <h2>Workflow Builder</h2>
+                    <button class="btn primary" onclick="createNewWorkflow()">
+                        <i class="fas fa-plus"></i> New Workflow
+                    </button>
+                </div>
+                
+                <div class="workflow-canvas" id="workflowCanvas">
+                    <div class="canvas-placeholder">
+                        <i class="fas fa-project-diagram"></i>
+                        <p>Drag and drop components to build your workflow</p>
+                    </div>
+                </div>
+
+                <div class="component-palette">
+                    <h3>Components</h3>
+                    <div class="component-list">
+                        <div class="component" draggable="true" data-type="curl">
+                            <i class="fas fa-terminal"></i> cURL Request
+                        </div>
+                        <div class="component" draggable="true" data-type="phone_call">
+                            <i class="fas fa-phone"></i> Phone Call
+                        </div>
+                        <div class="component" draggable="true" data-type="website">
+                            <i class="fas fa-globe"></i> Website
+                        </div>
+                        <div class="component" draggable="true" data-type="condition">
+                            <i class="fas fa-code-branch"></i> Condition
+                        </div>
+                        <div class="component" draggable="true" data-type="delay">
+                            <i class="fas fa-clock"></i> Delay
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="connections" class="tab-content">
+                <div class="connections-header">
+                    <h2>API Connections</h2>
+                    <button class="btn primary" onclick="addConnection()">
+                        <i class="fas fa-plus"></i> Add Connection
+                    </button>
+                </div>
+                
+                <div class="connections-grid" id="connectionsGrid">
+                </div>
+            </div>
+
+            <div id="curl" class="tab-content">
+                <div class="curl-builder">
+                    <h2>cURL Request Builder</h2>
+                    <div class="curl-form">
+                        <div class="form-group">
+                            <label>Method</label>
+                            <select id="curlMethod">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                                <option value="PATCH">PATCH</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>URL</label>
+                            <input type="text" id="curlUrl" placeholder="https://api.example.com/endpoint">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Headers (JSON)</label>
+                            <textarea id="curlHeaders" placeholder='{"Content-Type": "application/json"}'></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Body (JSON)</label>
+                            <textarea id="curlBody" placeholder='{"key": "value"}'></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button class="btn primary" onclick="executeCurl()">
+                                <i class="fas fa-play"></i> Execute Request
+                            </button>
+                            <button class="btn secondary" onclick="generateCurlCommand()">
+                                <i class="fas fa-code"></i> Generate cURL
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="curl-result" id="curlResult" style="display: none;">
+                        <h3>Response</h3>
+                        <pre id="curlResponse"></pre>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
