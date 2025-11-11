@@ -1,25 +1,62 @@
+# Netlify Build Configuration
 [build]
   publish = "public"
-  command = "echo 'No build command needed for static site'"
+  command = "npm run netlify:build"
 
 [build.environment]
   NODE_VERSION = "18"
+  NPM_VERSION = "9"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  included_files = ["netlify/functions/**"]
+
+# API Routes
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/api/:splat"
   status = 200
 
+# Health check
+[[redirects]]
+  from = "/health"
+  to = "/.netlify/functions/api/health"
+  status = 200
+
+# Socket.io fallback (for development compatibility)
+[[redirects]]
+  from = "/socket.io/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# SPA fallback
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 404
 
-[context.production]
-  command = "echo 'Production build'"
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
 
-[context.deploy-preview]
-  command = "echo 'Preview build'"
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
-[context.branch-deploy]
-  command = "echo 'Branch build'"
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

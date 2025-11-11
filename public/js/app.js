@@ -6,6 +6,7 @@ class ZenAPIAutomator {
         this.connections = [];
         this.chatMessages = [];
         this.isTyping = false;
+        this.apiBase = '/api'; // Updated for Netlify functions
         this.init();
     }
 
@@ -61,20 +62,24 @@ class ZenAPIAutomator {
 
     async loadConnections() {
         try {
-            const response = await fetch('/api/connections');
+            const response = await fetch(`${this.apiBase}/connections`);
+            if (!response.ok) throw new Error('Failed to load connections');
             this.connections = await response.json();
             this.renderConnections();
         } catch (error) {
             console.error('Failed to load connections:', error);
+            this.showNotification('Failed to load connections', 'error');
         }
     }
 
     async loadWorkflows() {
         try {
-            const response = await fetch('/api/workflows');
+            const response = await fetch(`${this.apiBase}/workflows`);
+            if (!response.ok) throw new Error('Failed to load workflows');
             this.workflows = await response.json();
         } catch (error) {
             console.error('Failed to load workflows:', error);
+            this.showNotification('Failed to load workflows', 'error');
         }
     }
 
@@ -232,7 +237,7 @@ class ZenAPIAutomator {
             const headers = headersText ? JSON.parse(headersText) : {};
             const body = bodyText ? JSON.parse(bodyText) : undefined;
 
-            const response = await fetch('/api/execute-curl', {
+            const response = await fetch(`${this.apiBase}/execute-curl`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -245,6 +250,8 @@ class ZenAPIAutomator {
                 })
             });
 
+            if (!response.ok) throw new Error('Request failed');
+            
             const result = await response.json();
             this.displayCurlResult(result);
         } catch (error) {
@@ -374,7 +381,7 @@ class ZenAPIAutomator {
 
     async callAI(message) {
         try {
-            const response = await fetch('/.netlify/functions/api/ai/chat', {
+            const response = await fetch(`${this.apiBase}/ai/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -392,6 +399,7 @@ class ZenAPIAutomator {
             const data = await response.json();
             return data.response;
         } catch (error) {
+            console.error('AI API Error:', error);
             // Fallback to local responses if API fails
             return this.getFallbackResponse(message);
         }
