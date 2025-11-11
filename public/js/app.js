@@ -7,6 +7,9 @@ class ZenAPIAutomator {
         this.chatMessages = [];
         this.isTyping = false;
         this.apiBase = '/api'; // Updated for Netlify functions
+        this.botApiBase = '/bot'; // Bot API endpoints
+        this.botStatus = null;
+        this.botHistory = [];
         this.init();
     }
 
@@ -16,6 +19,7 @@ class ZenAPIAutomator {
         this.loadWorkflows();
         this.setupSocketListeners();
         this.initChat();
+        this.initBotControl();
         this.checkMobileView();
     }
 
@@ -580,6 +584,178 @@ class ZenAPIAutomator {
         textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
     }
 
+    // Bot Control Functions
+    initBotControl() {
+        this.refreshBotStatus();
+        this.loadBotHistory();
+        
+        // Auto-refresh bot status every 30 seconds
+        setInterval(() => {
+            if (this.currentTab === 'bot-control') {
+                this.refreshBotStatus();
+            }
+        }, 30000);
+    }
+
+    async refreshBotStatus() {
+        try {
+            const response = await fetch(`${this.botApiBase}/status`);
+            if (!response.ok) throw new Error('Failed to get bot status');
+            
+            const status = await response.json();
+            this.updateBotStatus(status);
+            
+        } catch (error) {
+            console.error('Failed to refresh bot status:', error);
+            this.addBotLogEntry('Failed to refresh bot status', 'error');
+        }
+    }
+
+    updateBotStatus(status) {
+        this.botStatus = status;
+        
+        // Update UI elements
+        const statusValue = document.getElementById('botStatusValue');
+        const uptime = document.getElementById('botUptime');
+        const messages = document.getElementById('botMessages');
+        const queue = document.getElementById('botQueue');
+        const mainStatus = document.getElementById('botMainStatus');
+        const statusIndicator = document.getElementById('botStatusIndicator');
+        
+        if (statusValue) statusValue.textContent = status.status || 'Unknown';
+        if (uptime) uptime.textContent = this.formatUptime(status.uptime || 0);
+        if (messages) messages.textContent = status.messageCount || 0;
+        if (queue) queue.textContent = status.queueLength || 0;
+        
+        // Update status indicators
+        const isOnline = status.status === 'online';
+        if (mainStatus) {
+            mainStatus.className = `status-indicator ${isOnline ? 'online' : 'offline'}`;
+        }
+        if (statusIndicator) {
+            statusIndicator.className = `status-indicator-bot ${isOnline ? 'online' : 'offline'}`;
+        }
+    }
+
+    formatUptime(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        return `${hours}h ${minutes}m`;
+    }
+
+    async loadBotHistory() {
+        try {
+            const response = await fetch(`${this.botApiBase}/history?limit=20`);
+            if (!response.ok) throw new Error('Failed to load bot history');
+            
+            const data = await response.json();
+            this.botHistory = data.history || [];
+            this.updateBotActivityLog();
+            
+        } catch (error) {
+            console.error('Failed to load bot history:', error);
+        }
+    }
+
+    updateBotActivityLog() {
+        const logContainer = document.getElementById('botActivityLog');
+        if (!logContainer) return;
+        
+        logContainer.innerHTML = this.botHistory.slice(-10).reverse().map(entry => `
+            <div class="log-entry">
+                <span class="log-time">${new Date(entry.timestamp).toLocaleTimeString()}</span>
+                <span class="log-message">${entry.type === 'user' ? '👤 User:' : '🤖 Bot:'} ${entry.message}</span>
+            </div>
+        `).join('');
+    }
+
+    async sendBotCommand(command = null) {
+        const input = document.getElementById('botCommandInput');
+        const message = command || input.value.trim();
+        
+        if (!message) return;
+        
+        if (!command) {
+            input.value = '';
+            this.autoResizeTextarea(input);
+        }
+        
+        this.addBotLogEntry(`Sending command: ${message}`, 'info');
+        
+        try {
+            const response = await fetch(`${this.botApiBase}/message`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message,
+                    userId: 'web-user'
+                })
+            });
+            
+            if (!response.ok) throw new Error('Failed to send command');
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                this.addBotLogEntry(`Bot response: ${data.response.substring(0, 100)}...`, 'success');
+                this.showNotification(data.response, 'success');
+                this.refreshBotStatus();
+            } else {
+                this.addBotLogEntry(`Bot error: ${data.error}`, 'error');
+                this.showNotification(data.error, 'error');
+            }
+            
+        } catch (error) {
+            console.error('Failed to send bot command:', error);
+            this.addBotLogEntry(`Command failed: ${error.message}`, 'error');
+            this.showNotification('Failed to send command to bot', 'error');
+        }
+    }
+
+    addBotLogEntry(message, type = 'info') {
+        const logContainer = document.getElementById('botActivityLog');
+        if (!logContainer) return;
+        
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.innerHTML = `
+            <span class="log-time">${new Date().toLocaleTimeString()}</span>
+            <span class="log-message">${message}</span>
+        `;
+        
+        logContainer.insertBefore(entry, logContainer.firstChild);
+        
+        // Keep only last 20 entries
+        while (logContainer.children.length > 20) {
+            logContainer.removeChild(logContainer.lastChild);
+        }
+    }
+
+    async clearBotHistory() {
+        if (!confirm('Are you sure you want to clear bot history?')) return;
+        
+        try {
+            // Clear local display
+            const logContainer = document.getElementById('botActivityLog');
+            if (logContainer) {
+                logContainer.innerHTML = `
+                    <div class="log-entry">
+                        <span class="log-time">${new Date().toLocaleTimeString()}</span>
+                        <span class="log-message">Bot history cleared</span>
+                    </div>
+                `;
+            }
+            
+            this.showNotification('Bot history cleared', 'success');
+            
+        } catch (error) {
+            console.error('Failed to clear bot history:', error);
+            this.showNotification('Failed to clear bot history', 'error');
+        }
+    }
+
     checkMobileView() {
         const floatingBtn = document.getElementById('floatingChatBtn');
         if (window.innerWidth <= 768) {
@@ -710,7 +886,72 @@ function toggleChat() {
     }
 }
 
+// Bot dialog functions
+function showPhoneDialog() {
+    document.getElementById('phoneDialog').style.display = 'flex';
+}
+
+function closePhoneDialog() {
+    document.getElementById('phoneDialog').style.display = 'none';
+}
+
+function showApiDialog() {
+    document.getElementById('apiDialog').style.display = 'flex';
+}
+
+function closeApiDialog() {
+    document.getElementById('apiDialog').style.display = 'none';
+}
+
+async function executePhoneCall() {
+    const phoneNumber = document.getElementById('phoneNumber').value.trim();
+    const message = document.getElementById('callMessage').value.trim();
+    
+    if (!phoneNumber) {
+        app.showNotification('Please enter a phone number', 'error');
+        return;
+    }
+    
+    const command = message ? `Call ${phoneNumber} and say "${message}"` : `Call ${phoneNumber}`;
+    
+    closePhoneDialog();
+    await app.sendBotCommand(command);
+}
+
+async function executeApiRequest() {
+    const method = document.getElementById('apiMethod').value;
+    const url = document.getElementById('apiUrl').value.trim();
+    const headers = document.getElementById('apiHeaders').value.trim();
+    const data = document.getElementById('apiData').value.trim();
+    
+    if (!url) {
+        app.showNotification('Please enter a URL', 'error');
+        return;
+    }
+    
+    let command = `Make ${method} request to ${url}`;
+    if (headers) command += ` with headers ${headers}`;
+    if (data) command += ` with data ${data}`;
+    
+    closeApiDialog();
+    await app.sendBotCommand(command);
+}
+
+function handleBotCommandKeyPress(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        app.sendBotCommand();
+    }
+}
+
 // Handle window resize for mobile chat
 window.addEventListener('resize', () => {
     if (app) app.checkMobileView();
+});
+
+// Close modals when clicking outside
+window.addEventListener('click', (event) => {
+    if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+    }
 });

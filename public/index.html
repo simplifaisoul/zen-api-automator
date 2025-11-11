@@ -32,6 +32,10 @@
                         <i class="fas fa-robot"></i> AI Assistant
                         <span class="notification-badge" id="chatNotification" style="display: none;">1</span>
                     </button>
+                    <button class="nav-btn" data-tab="bot-control" id="botControlBtn">
+                        <i class="fas fa-terminal"></i> Bot Control
+                        <span class="status-indicator-bot online" id="botStatusIndicator"></span>
+                    </button>
                 </nav>
             </div>
         </header>
@@ -255,7 +259,153 @@
                     </div>
                 </div>
             </div>
+
+            <div id="bot-control" class="tab-content">
+                <div class="bot-control-container">
+                    <div class="bot-header">
+                        <div class="bot-title">
+                            <i class="fas fa-terminal"></i>
+                            <h2>Zen Bot Control Center</h2>
+                            <span class="status-indicator online" id="botMainStatus"></span>
+                        </div>
+                        <div class="bot-actions">
+                            <button class="btn secondary" onclick="refreshBotStatus()">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                            <button class="btn secondary" onclick="clearBotHistory()">
+                                <i class="fas fa-trash"></i> Clear History
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bot-status-grid">
+                        <div class="status-card">
+                            <h3><i class="fas fa-heartbeat"></i> Bot Status</h3>
+                            <div class="status-value" id="botStatusValue">Checking...</div>
+                        </div>
+                        <div class="status-card">
+                            <h3><i class="fas fa-clock"></i> Uptime</h3>
+                            <div class="status-value" id="botUptime">--</div>
+                        </div>
+                        <div class="status-card">
+                            <h3><i class="fas fa-envelope"></i> Messages</h3>
+                            <div class="status-value" id="botMessages">0</div>
+                        </div>
+                        <div class="status-card">
+                            <h3><i class="fas fa-tasks"></i> Queue</h3>
+                            <div class="status-value" id="botQueue">0</div>
+                        </div>
+                    </div>
+
+                    <div class="bot-command-interface">
+                        <h3><i class="fas fa-terminal"></i> Command Interface</h3>
+                        <div class="quick-commands">
+                            <button class="command-btn" onclick="sendBotCommand('status')">
+                                <i class="fas fa-info-circle"></i> Check Status
+                            </button>
+                            <button class="command-btn" onclick="sendBotCommand('help')">
+                                <i class="fas fa-question-circle"></i> Get Help
+                            </button>
+                            <button class="command-btn" onclick="showPhoneDialog()">
+                                <i class="fas fa-phone"></i> Make Call
+                            </button>
+                            <button class="command-btn" onclick="showApiDialog()">
+                                <i class="fas fa-globe"></i> API Request
+                            </button>
+                        </div>
+                        
+                        <div class="bot-input-wrapper">
+                            <textarea 
+                                id="botCommandInput" 
+                                placeholder="Enter command for bot... (e.g., 'Call +1-555-123-4567', 'Make GET request to https://api.example.com')"
+                                rows="3"
+                                onkeypress="handleBotCommandKeyPress(event)"
+                                oninput="autoResizeTextarea(this)"
+                            ></textarea>
+                            <button class="send-btn" onclick="sendBotCommand()" id="botSendButton">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bot-activity-log">
+                        <h3><i class="fas fa-history"></i> Activity Log</h3>
+                        <div class="activity-log" id="botActivityLog">
+                            <div class="log-entry">
+                                <span class="log-time">Just now</span>
+                                <span class="log-message">Bot control center initialized</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
+
+        <!-- Phone Call Dialog -->
+        <div class="modal" id="phoneDialog" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-phone"></i> Make Phone Call</h3>
+                    <button class="close-btn" onclick="closePhoneDialog()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="+1-555-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label>Message (optional)</label>
+                        <textarea id="callMessage" placeholder="Message to deliver during call..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn secondary" onclick="closePhoneDialog()">Cancel</button>
+                    <button class="btn primary" onclick="executePhoneCall()">
+                        <i class="fas fa-phone"></i> Make Call
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Request Dialog -->
+        <div class="modal" id="apiDialog" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-globe"></i> Make API Request</h3>
+                    <button class="close-btn" onclick="closeApiDialog()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Method</label>
+                        <select id="apiMethod">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                            <option value="PATCH">PATCH</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="apiUrl" placeholder="https://api.example.com/endpoint">
+                    </div>
+                    <div class="form-group">
+                        <label>Headers (JSON)</label>
+                        <textarea id="apiHeaders" placeholder='{"Content-Type": "application/json"}'></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Body (JSON)</label>
+                        <textarea id="apiData" placeholder='{"key": "value"}'></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn secondary" onclick="closeApiDialog()">Cancel</button>
+                    <button class="btn primary" onclick="executeApiRequest()">
+                        <i class="fas fa-play"></i> Execute Request
+                    </button>
+                </div>
+            </div>
+        </div>
 
         <!-- Floating Chat Button (for mobile) -->
         <button class="floating-chat-btn" id="floatingChatBtn" onclick="toggleChat()" style="display: none;">
