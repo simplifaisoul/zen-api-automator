@@ -372,49 +372,39 @@ Which API would you like to connect? I can provide specific setup instructions.`
     return `Here are powerful workflow examples you can create:
 
 **🔄 Data Synchronization Workflow**
-```
 Trigger: Schedule (every hour)
 ├── Get data from CRM API
 ├── Transform data format
 ├── Send to Database API
 └── Log success/failure
-```
 
 **📧 Smart Notification System**
-```
 Trigger: Webhook from application
 ├── Check priority level
 ├── High: Send SMS (Twilio)
 ├── Medium: Send Slack message
 └── Low: Log for review
-```
 
 **🤖 AI Content Pipeline**
-```
 Trigger: New file upload
 ├── Analyze with AI (OpenAI)
 ├── Generate summary/content
 ├── Post to social media
 └── Update analytics dashboard
-```
 
 **💳 Payment Processing**
-```
 Trigger: New order webhook
 ├── Validate payment (Stripe)
 ├── Update inventory
 ├── Send confirmation email
 └── Create shipping label
-```
 
 **📊 Report Generation**
-```
 Trigger: Schedule (daily)
 ├── Fetch data from multiple APIs
 ├── Aggregate and analyze
 ├── Generate PDF report
 └── Email to stakeholders
-```
 
 Which example interests you most? I can help you build it step by step!`;
   }
