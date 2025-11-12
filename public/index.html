@@ -4,342 +4,315 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zen API Automator - Professional Workflow Builder</title>
-    <link rel="stylesheet" href="styles/main.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
     <div id="app">
         <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" href="#" style="color: var(--zen-purple);">
                     <i class="fas fa-bolt"></i>
-                    <span>Zen API</span>
+                    Zen API
+                </a>
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-tab="dashboard">
+                                <i class="fas fa-th-large me-1"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-tab="workflows">
+                                <i class="fas fa-project-diagram me-1"></i> Workflows
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-tab="connections">
+                                <i class="fas fa-plug me-1"></i> Connections
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-tab="executions">
+                                <i class="fas fa-play me-1"></i> Executions
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <nav class="nav">
-                    <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">
-                        <i class="fas fa-th-large"></i>
-                        Dashboard
-                    </button>
-                    <button class="nav-btn" data-tab="workflows" onclick="switchTab('workflows')">
-                        <i class="fas fa-project-diagram"></i>
-                        Workflows
-                    </button>
-                    <button class="nav-btn" data-tab="connections" onclick="switchTab('connections')">
-                        <i class="fas fa-plug"></i>
-                        Connections
-                    </button>
-                    <button class="nav-btn" data-tab="executions" onclick="switchTab('executions')">
-                        <i class="fas fa-play"></i>
-                        Executions
-                    </button>
-                </nav>
-                <div class="user-menu">
-                    <button class="user-btn">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary rounded-circle">
                         <i class="fas fa-user"></i>
                     </button>
                 </div>
             </div>
-        </header>
+        </nav>
 
         <!-- Main Content -->
-        <main class="main">
+        <main class="container-fluid my-4">
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
-                <div class="dashboard-header">
+                <div class="mb-4">
                     <h1>Dashboard</h1>
-                    <p>Build and automate your workflows with ease</p>
+                    <p class="text-muted">Build and automate your workflows with ease</p>
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <div class="action-card" onclick="createNewWorkflow()">
-                        <div class="action-icon">
-                            <i class="fas fa-plus"></i>
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card h-100 text-center action-card" onclick="zenAPI.createNewWorkflow()">
+                            <div class="card-body">
+                                <div class="card-icon mx-auto mb-3">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <h5 class="card-title">Create Workflow</h5>
+                                <p class="card-text text-muted">Build a new automation workflow</p>
+                            </div>
                         </div>
-                        <h3>Create Workflow</h3>
-                        <p>Build a new automation workflow</p>
                     </div>
-                    
-                    <div class="action-card" onclick="showConnectionDialog()">
-                        <div class="action-icon">
-                            <i class="fas fa-plug"></i>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card h-100 text-center action-card" onclick="zenAPI.showConnectionDialog()">
+                            <div class="card-body">
+                                <div class="card-icon mx-auto mb-3">
+                                    <i class="fas fa-plug"></i>
+                                </div>
+                                <h5 class="card-title">Add Connection</h5>
+                                <p class="card-text text-muted">Connect to external services</p>
+                            </div>
                         </div>
-                        <h3>Add Connection</h3>
-                        <p>Connect to external services</p>
                     </div>
-                    
-                    <div class="action-card" onclick="runWorkflow()">
-                        <div class="action-icon">
-                            <i class="fas fa-play"></i>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card h-100 text-center action-card" onclick="zenAPI.showTemplates()">
+                            <div class="card-body">
+                                <div class="card-icon mx-auto mb-3">
+                                    <i class="fas fa-copy"></i>
+                                </div>
+                                <h5 class="card-title">Browse Templates</h5>
+                                <p class="card-text text-muted">Use pre-built workflow templates</p>
+                            </div>
                         </div>
-                        <h3>Run Workflow</h3>
-                        <p>Execute an existing workflow</p>
-                    </div>
-                    
-                    <div class="action-card" onclick="showTemplates()">
-                        <div class="action-icon">
-                            <i class="fas fa-copy"></i>
-                        </div>
-                        <h3>Browse Templates</h3>
-                        <p>Use pre-built workflow templates</p>
                     </div>
                 </div>
 
                 <!-- Stats Overview -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-project-diagram"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="workflowCount">0</h3>
-                            <p>Workflows</p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-plug"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="connectionCount">0</h3>
-                            <p>Connections</p>
+                <div class="row g-4 mb-5">
+                    <div class="col">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="card-icon"><i class="fas fa-project-diagram"></i></div>
+                                <div>
+                                    <h3 id="workflowCount" class="mb-0">0</h3>
+                                    <p class="text-muted mb-0">Workflows</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-play"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="executionCount">0</h3>
-                            <p>Executions</p>
+                    <div class="col">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="card-icon"><i class="fas fa-plug"></i></div>
+                                <div>
+                                    <h3 id="connectionCount" class="mb-0">0</h3>
+                                    <p class="text-muted mb-0">Connections</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
+                    <div class="col">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="card-icon"><i class="fas fa-play"></i></div>
+                                <div>
+                                    <h3 id="executionCount" class="mb-0">0</h3>
+                                    <p class="text-muted mb-0">Executions</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="successRate">0%</h3>
-                            <p>Success Rate</p>
+                    </div>
+                    <div class="col">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="card-icon"><i class="fas fa-check-circle"></i></div>
+                                <div>
+                                    <h3 id="successRate" class="mb-0">0%</h3>
+                                    <p class="text-muted mb-0">Success Rate</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Recent Activity -->
-                <div class="recent-activity">
-                    <h2>Recent Activity</h2>
-                    <div class="activity-list" id="activityList">
-                        <div class="activity-item">
-                            <div class="activity-icon">
-                                <i class="fas fa-info"></i>
-                            </div>
-                            <div class="activity-content">
-                                <h4>Welcome to Zen API Automator</h4>
-                                <p>Get started by creating your first workflow</p>
-                                <span class="activity-time">Just now</span>
-                            </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="activityList">
+                            <!-- Activity items will be injected here -->
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Workflows Tab -->
-            <div id="workflows" class="tab-content">
-                <div class="tab-header">
+            <div id="workflows" class="tab-content" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1>Workflows</h1>
-                    <button class="btn-primary" onclick="createNewWorkflow()">
-                        <i class="fas fa-plus"></i>
-                        New Workflow
+                    <button class="btn btn-primary" onclick="zenAPI.createNewWorkflow()">
+                        <i class="fas fa-plus me-1"></i> New Workflow
                     </button>
                 </div>
-                
-                <div class="workflow-grid" id="workflowGrid">
-                    <div class="empty-state">
-                        <i class="fas fa-project-diagram"></i>
-                        <h3>No workflows yet</h3>
-                        <p>Create your first workflow to get started</p>
-                        <button class="btn-primary" onclick="createNewWorkflow()">
-                            <i class="fas fa-plus"></i>
-                            Create Workflow
-                        </button>
-                    </div>
+                <div id="workflowGrid" class="row g-4">
+                    <!-- Workflow cards will be injected here -->
                 </div>
             </div>
 
             <!-- Connections Tab -->
-            <div id="connections" class="tab-content">
-                <div class="tab-header">
+            <div id="connections" class="tab-content" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1>Connections</h1>
-                    <button class="btn-primary" onclick="showConnectionDialog()">
-                        <i class="fas fa-plus"></i>
-                        Add Connection
+                    <button class="btn btn-primary" onclick="zenAPI.showConnectionDialog()">
+                        <i class="fas fa-plus me-1"></i> Add Connection
                     </button>
                 </div>
-                
-                <div class="connection-grid" id="connectionGrid">
-                    <div class="empty-state">
-                        <i class="fas fa-plug"></i>
-                        <h3>No connections yet</h3>
-                        <p>Add your first service connection</p>
-                        <button class="btn-primary" onclick="showConnectionDialog()">
-                            <i class="fas fa-plus"></i>
-                            Add Connection
-                        </button>
-                    </div>
+                <div id="connectionGrid" class="row g-4">
+                    <!-- Connection cards will be injected here -->
                 </div>
             </div>
 
             <!-- Executions Tab -->
-            <div id="executions" class="tab-content">
-                <div class="tab-header">
+            <div id="executions" class="tab-content" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1>Executions</h1>
-                    <button class="btn-secondary" onclick="refreshExecutions()">
-                        <i class="fas fa-sync"></i>
-                        Refresh
+                    <button class="btn btn-secondary" onclick="zenAPI.refreshExecutions()">
+                        <i class="fas fa-sync me-1"></i> Refresh
                     </button>
                 </div>
-                
-                <div class="execution-list" id="executionList">
-                    <div class="empty-state">
-                        <i class="fas fa-play"></i>
-                        <h3>No executions yet</h3>
-                        <p>Run a workflow to see execution history</p>
-                    </div>
+                <div id="executionList" class="list-group">
+                    <!-- Execution items will be injected here -->
                 </div>
             </div>
         </main>
 
         <!-- Workflow Builder Modal -->
-        <div id="workflowModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Workflow Builder</h2>
-                    <button class="close-btn" onclick="closeWorkflowModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="workflow-builder">
-                    <div class="builder-sidebar">
-                        <h3>Components</h3>
-                        <div class="component-list">
-                            <div class="component-item" draggable="true" data-type="trigger">
-                                <i class="fas fa-bolt"></i>
-                                <span>Trigger</span>
+        <div class="modal fade" id="workflowModal" tabindex="-1" aria-labelledby="workflowModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-fullscreen">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="workflowModalLabel">Workflow Builder</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <div class="workflow-builder">
+                            <div class="builder-sidebar">
+                                <h3>Components</h3>
+                                <div class="list-group">
+                                    <div class="list-group-item component-item" draggable="true" data-type="trigger"><i class="fas fa-bolt me-2"></i> Trigger</div>
+                                    <div class="list-group-item component-item" draggable="true" data-type="http"><i class="fas fa-globe me-2"></i> HTTP Request</div>
+                                    <div class="list-group-item component-item" draggable="true" data-type="phone"><i class="fas fa-phone me-2"></i> Phone Call</div>
+                                    <div class="list-group-item component-item" draggable="true" data-type="email"><i class="fas fa-envelope me-2"></i> Email</div>
+                                    <div class="list-group-item component-item" draggable="true" data-type="condition"><i class="fas fa-code-branch me-2"></i> Condition</div>
+                                    <div class="list-group-item component-item" draggable="true" data-type="delay"><i class="fas fa-clock me-2"></i> Delay</div>
+                                </div>
                             </div>
-                            <div class="component-item" draggable="true" data-type="http">
-                                <i class="fas fa-globe"></i>
-                                <span>HTTP Request</span>
+                            <div class="builder-canvas" id="builderCanvas">
+                                <div class="canvas-placeholder">
+                                    <i class="fas fa-arrow-left"></i>
+                                    <p>Drag components here</p>
+                                </div>
                             </div>
-                            <div class="component-item" draggable="true" data-type="phone">
-                                <i class="fas fa-phone"></i>
-                                <span>Phone Call</span>
-                            </div>
-                            <div class="component-item" draggable="true" data-type="email">
-                                <i class="fas fa-envelope"></i>
-                                <span>Email</span>
-                            </div>
-                            <div class="component-item" draggable="true" data-type="condition">
-                                <i class="fas fa-code-branch"></i>
-                                <span>Condition</span>
-                            </div>
-                            <div class="component-item" draggable="true" data-type="delay">
-                                <i class="fas fa-clock"></i>
-                                <span>Delay</span>
+                            <div class="builder-properties">
+                                <h3>Properties</h3>
+                                <div id="propertiesPanel">
+                                    <p class="text-muted">Select a component to configure it.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="builder-canvas" id="builderCanvas">
-                        <div class="canvas-placeholder">
-                            <i class="fas fa-arrow-left"></i>
-                            <p>Drag components here to build your workflow</p>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="zenAPI.saveWorkflow()">
+                            <i class="fas fa-save me-1"></i> Save Workflow
+                        </button>
                     </div>
-                    
-                    <div class="builder-properties">
-                        <h3>Properties</h3>
-                        <div class="properties-panel" id="propertiesPanel">
-                            <p>Select a component to configure its properties</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button class="btn-secondary" onclick="closeWorkflowModal()">Cancel</button>
-                    <button class="btn-primary" onclick="saveWorkflow()">
-                        <i class="fas fa-save"></i>
-                        Save Workflow
-                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Connection Modal -->
-        <div id="connectionModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Add Connection</h2>
-                    <button class="close-btn" onclick="closeConnectionModal()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="connection-form">
-                    <div class="form-group">
-                        <label>Service Type</label>
-                        <select id="serviceType" onchange="updateConnectionForm()">
-                            <option value="">Select a service</option>
-                            <option value="http">HTTP API</option>
-                            <option value="twilio">Twilio</option>
-                            <option value="sendgrid">SendGrid</option>
-                            <option value="slack">Slack</option>
-                            <option value="github">GitHub</option>
-                            <option value="stripe">Stripe</option>
-                        </select>
+        <div class="modal fade" id="connectionModal" tabindex="-1" aria-labelledby="connectionModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="connectionModalLabel">Add Connection</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Connection Name</label>
-                        <input type="text" id="connectionName" placeholder="My API Connection">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="serviceType" class="form-label">Service Type</label>
+                            <select class="form-select" id="serviceType" onchange="zenAPI.updateConnectionForm()">
+                                <option selected>Select a service</option>
+                                <option value="http">HTTP API</option>
+                                <option value="twilio">Twilio</option>
+                                <option value="sendgrid">SendGrid</option>
+                                <option value="slack">Slack</option>
+                                <option value="github">GitHub</option>
+                                <option value="stripe">Stripe</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="connectionName" class="form-label">Connection Name</label>
+                            <input type="text" class="form-control" id="connectionName" placeholder="My API Connection">
+                        </div>
+                        <div id="connectionFields">
+                            <p class="text-muted">Select a service type to see required fields.</p>
+                        </div>
                     </div>
-                    
-                    <div id="connectionFields">
-                        <p>Select a service type to see required fields</p>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="zenAPI.saveConnection()">
+                            <i class="fas fa-save me-1"></i> Save Connection
+                        </button>
                     </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button class="btn-secondary" onclick="closeConnectionModal()">Cancel</button>
-                    <button class="btn-primary" onclick="saveConnection()">
-                        <i class="fas fa-save"></i>
-                        Save Connection
-                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Loading Overlay -->
-        <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-            <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Processing...</p>
+        <div class="modal" id="loadingOverlay" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-center p-4">
+                    <div class="spinner-border text-primary mx-auto" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 mb-0" id="loadingText">Processing...</p>
+                </div>
             </div>
         </div>
 
         <!-- Notification Toast -->
-        <div id="notification" class="notification" style="display: none;">
-            <div class="notification-content">
-                <i class="fas fa-check-circle"></i>
-                <span id="notificationText">Success!</span>
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="notificationToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong class="me-auto" id="notificationTitle">Success</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="notificationText">
+                    Operation completed successfully.
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- Custom App JS -->
     <script src="js/app.js"></script>
 </body>
 </html>
